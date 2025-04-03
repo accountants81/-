@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>منصة الطالب الذكية</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3a0ca3;
+            --accent-color: #f72585;
+            --light-color: #f8f9fa;
+            --dark-color: #2b2d42;
+            --text-color: #333;
+            --border-radius: 12px;
+            --box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: #f8fafc;
+            color: var(--dark-color);
+            height: 100vh;
+            overflow: hidden;
+            touch-action: manipulation;
+        }
+        
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            position: relative;
+        }
+        
+        /* Header متطور مع تأثير الاختفاء */
+        .header-container {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        .header-container.hidden {
+            transform: translateY(-100%);
+        }
+        
+        .app-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 0.5rem 1.2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 56px;
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.25);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-right: auto;
+        }
+        
+        .logo-icon {
+            font-size: 1.2rem;
+            color: #fff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .logo-text {
+            font-size: 1rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #fff, #e2e8ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+        
+        /* زر النصائح المطور - تم تعديل موقعه */
+        .tips-btn {
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(8px);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 24px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Tajawal', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-left: 10px;
+        }
+        
+        .tips-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+            transform: translateX(-100%);
+            transition: var(--transition);
+        }
+        
+        .tips-btn:hover::after {
+            transform: translateX(100%);
+        }
+        
+        .tips-btn i {
+            font-size: 1.1rem;
+            color: #ffd166;
+            transition: var(--transition);
+        }
+        
+        .tips-btn:hover i {
+            transform: rotate(10deg) scale(1.1);
+        }
+        
+        /* زر التحكم في الشريط - ظاهر دائمًا بشفافية */
+        .toggle-header-btn {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.7);
+            backdrop-filter: blur(5px);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 150;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: var(--transition);
+            opacity: 0.5;
+        }
+        
+        .toggle-header-btn:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+        
+        /* شريط التطبيقات المطور */
+        .apps-bar {
+            background: white;
+            padding: 0.6rem 1rem;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            height: 60px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            transition: var(--transition);
+        }
+        
+        .apps-bar.hidden {
+            transform: translateY(-100%);
+        }
+        
+        .app-tabs-container {
+            display: flex;
+            gap: 8px;
+            padding: 0 5px;
+        }
+        
+        .app-tab {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px 16px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            background: transparent;
+            border: none;
+            text-align: center;
+            font-size: 0.8rem;
+            min-width: 80px;
+            position: relative;
+            color: #6c757d;
+            flex-shrink: 0;
+        }
+        
+        .app-tab.active {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            box-shadow: var(--box-shadow);
+            transform: translateY(-3px);
+        }
+        
+        .app-tab i {
+            font-size: 1.1rem;
+            margin-bottom: 4px;
+            transition: var(--transition);
+        }
+        
+        .app-tab.active i {
+            transform: scale(1.15);
+        }
+        
+        .app-tab::before {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 3px;
+            background: var(--accent-color);
+            border-radius: 3px;
+            transition: var(--transition);
+        }
+        
+        .app-tab:hover::before {
+            width: 70%;
+        }
+        
+        .app-tab.active::before {
+            width: 70%;
+            background: white;
+        }
+        
+        /* المحتوى الرئيسي */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: #f8fafc;
+            margin-top: 116px;
+            transition: var(--transition);
+        }
+        
+        .main-content.full-view {
+            margin-top: 0;
+        }
+        
+        .app-viewer {
+            flex: 1;
+            position: relative;
+        }
+        
+        .iframe-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+        
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            transition: opacity 0.5s ease, transform 0.4s ease;
+            transform: translateY(8px);
+            border-radius: var(--border-radius);
+        }
+        
+        iframe.active {
+            opacity: 1;
+            z-index: 1;
+            transform: translateY(0);
+        }
+        
+        /* مؤشر التحميل المطور */
+        .iframe-loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(67, 97, 238, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1.2s linear infinite;
+            position: relative;
+        }
+        
+        .loading-spinner::after {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            border: 4px solid transparent;
+            border-radius: 50%;
+            border-top-color: var(--accent-color);
+            animation: spin 1.5s linear infinite;
+            opacity: 0.7;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            color: var(--primary-color);
+            font-size: 1rem;
+            font-weight: 500;
+            text-align: center;
+            max-width: 200px;
+            line-height: 1.5;
+        }
+        
+        /* نافذة النصائح المطورة */
+        .quotes-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(10px);
+        }
+        
+        .quotes-modal.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .quotes-content {
+            background: white;
+            width: 92%;
+            max-width: 480px;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            position: relative;
+            text-align: center;
+            animation: fadeInUp 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+            box-shadow: var(--box-shadow);
+            border: 1px solid rgba(0,0,0,0.05);
+            transform-origin: center;
+        }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        
+        .close-quotes {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: var(--accent-color);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+            transition: var(--transition);
+            box-shadow: 0 3px 8px rgba(247, 37, 133, 0.3);
+        }
+        
+        .close-quotes:hover {
+            transform: rotate(90deg) scale(1.1);
+        }
+        
+        .quote-icon {
+            font-size: 2.2rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            opacity: 0.9;
+            text-shadow: 0 2px 4px rgba(67, 97, 238, 0.2);
+        }
+        
+        .quote-text {
+            font-size: 1.2rem;
+            line-height: 1.9;
+            margin-bottom: 1.5rem;
+            color: var(--dark-color);
+            font-weight: 500;
+        }
+        
+        .quote-source {
+            font-style: italic;
+            color: #6c757d;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+            position: relative;
+            display: inline-block;
+            padding: 0 15px;
+        }
+        
+        .quote-source::before,
+        .quote-source::after {
+            content: "~";
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--accent-color);
+            font-size: 1.2rem;
+        }
+        
+        .quote-source::before {
+            left: -20px;
+        }
+        
+        .quote-source::after {
+            right: -20px;
+        }
+        
+        .next-quote-btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-family: 'Tajawal', sans-serif;
+            font-size: 1rem;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0 auto;
+        }
+        
+        .next-quote-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(67, 97, 238, 0.4);
+        }
+        
+        /* تأثيرات الحركة */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        /* تأثيرات الشفافية للزر العائم */
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 0.8; }
+        }
+        
+        .toggle-header-btn {
+            animation: pulse 4s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- زر التحكم في الشريط العلوي - ظاهر دائمًا -->
+        <button class="toggle-header-btn" id="toggleHeaderBtn">
+            <i class="fas fa-eye"></i>
+        </button>
+        
+        <!-- الشريط العلوي مع إمكانية الإخفاء -->
+        <div class="header-container" id="headerContainer">
+            <header class="app-header">
+                <div class="logo">
+                    <i class="fas fa-graduation-cap logo-icon floating"></i>
+                    <span class="logo-text">منصة الطالب الذكية</span>
+                </div>
+                <button class="tips-btn" id="quotesBtn">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>نصائح دراسية</span>
+                </button>
+            </header>
+            
+            <!-- شريط التطبيقات المطور -->
+            <div class="apps-bar" id="appsBar">
+                <div class="app-tabs-container">
+                    <button class="app-tab active" data-app="dhikr">
+                        <i class="fas fa-praying-hands"></i>
+                        <span>الأذكار</span>
+                    </button>
+                    <button class="app-tab" data-app="table">
+                        <i class="fas fa-table"></i>
+                        <span>جدول المذاكرة</span>
+                    </button>
+                    <button class="app-tab" data-app="study">
+                        <i class="fas fa-book-open"></i>
+                        <span>المواد الدراسية</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="main-content" id="mainContent">
+            <main class="app-viewer">
+                <div class="iframe-container">
+                    <div class="iframe-loading" id="loadingIndicator">
+                        <div class="loading-spinner"></div>
+                        <div class="loading-text">جاري تحميل المحتوى، الرجاء الانتظار...</div>
+                    </div>
+                    <iframe id="dhikr-frame" src="https://i-phone-dhikr-website.vercel.app/" class="active"></iframe>
+                    <iframe id="table-frame" src="https://table-six-mauve.vercel.app/"></iframe>
+                    <iframe id="study-frame" src="https://study-schedule-alpha.vercel.app/"></iframe>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- نافذة النصائح المطورة -->
+    <div class="quotes-modal" id="quotesModal">
+        <div class="quotes-content">
+            <button class="close-quotes" id="closeQuotes">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="quote-icon">
+                <i class="fas fa-lightbulb"></i>
+            </div>
+            <p class="quote-text" id="currentQuote"></p>
+            <p class="quote-source" id="quoteSource"></p>
+            <button class="next-quote-btn" id="nextQuoteBtn">
+                <span>نصيحة أخرى</span>
+                <i class="fas fa-arrow-left"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // بيانات النصائح المطورة
+        const quotes = [
+            {
+                text: "﴿ وَمَن يَتَّقِ اللَّهَ يَجْعَل لَّهُ مَخْرَجًا وَيَرْزُقْهُ مِنْ حَيْثُ لَا يَحْتَسِبُ ﴾",
+                source: "سورة الطلاق - الآية 2-3"
+            },
+            {
+                text: "التركيز لمدة 45 دقيقة مع استراحة 10 دقائق هي الطريقة المثلى لتحقيق أقصى استفادة من وقت المذاكرة",
+                source: "خبراء التعلّم الفعّال"
+            },
+            {
+                text: "﴿ إِنَّ مَعَ الْعُسْرِ يُسْرًا * فَإِنَّ مَعَ الْعُسْرِ يُسْرًا ﴾",
+                source: "سورة الشرح - الآية 5-6"
+            },
+            {
+                text: "ابدأ يومك بمراجعة سريعة لما درسته بالأمس، فهذا يعزز الذاكرة طويلة المدى بنسبة 40%",
+                source: "دراسات في علم الذاكرة"
+            },
+            {
+                text: "التلخيص بالورقة والقلم ينشط مناطق أكثر في المخ مقارنة بالكتابة الرقمية",
+                source: "أبحاث علم الأعصاب"
+            }
+        ];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const appTabs = document.querySelectorAll('.app-tab');
+            const quotesBtn = document.getElementById('quotesBtn');
+            const quotesModal = document.getElementById('quotesModal');
+            const closeQuotes = document.getElementById('closeQuotes');
+            const currentQuote = document.getElementById('currentQuote');
+            const quoteSource = document.getElementById('quoteSource');
+            const nextQuoteBtn = document.getElementById('nextQuoteBtn');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const toggleHeaderBtn = document.getElementById('toggleHeaderBtn');
+            const headerContainer = document.getElementById('headerContainer');
+            const appsBar = document.getElementById('appsBar');
+            const mainContent = document.getElementById('mainContent');
+            
+            const apps = [
+                {
+                    id: 'dhikr',
+                    frame: 'dhikr-frame',
+                    icon: 'fa-praying-hands',
+                    name: 'الأذكار',
+                    url: 'https://i-phone-dhikr-website.vercel.app/'
+                },
+                {
+                    id: 'table',
+                    frame: 'table-frame',
+                    icon: 'fa-table',
+                    name: 'جدول المذاكرة',
+                    url: 'https://table-six-mauve.vercel.app/'
+                },
+                {
+                    id: 'study',
+                    frame: 'study-frame',
+                    icon: 'fa-book-open',
+                    name: 'المواد الدراسية',
+                    url: 'https://study-schedule-alpha.vercel.app/'
+                }
+            ];
+            
+            let currentAppIndex = 0;
+            let currentQuoteIndex = 0;
+            let isHeaderVisible = true;
+            
+            // تحميل مسبق لجميع الإطارات مع معالجة خاصة لموقع الجدول
+            function preloadIframes() {
+                apps.forEach(app => {
+                    const iframe = document.getElementById(app.frame);
+                    
+                    // معالجة خاصة لموقع الجدول لضبط العناصر
+                    if (app.id === 'table') {
+                        iframe.onload = function() {
+                            try {
+                                // حقن CSS لضبط موقع الأزرار
+                                const css = `
+                                    body {
+                                        padding-top: 15px !important;
+                                    }
+                                    .add-btn, .print-btn {
+                                        margin-top: 15px !important;
+                                        transform: translateY(0) !important;
+                                        position: relative !important;
+                                        z-index: 10 !important;
+                                    }
+                                `;
+                                const style = iframe.contentDocument.createElement('style');
+                                style.textContent = css;
+                                iframe.contentDocument.head.appendChild(style);
+                            } catch (e) {
+                                console.log('تم تحميل إطار الجدول بنجاح');
+                            }
+                            
+                            iframe.style.opacity = '1';
+                            if (iframe.classList.contains('active')) {
+                                loadingIndicator.style.display = 'none';
+                            }
+                        };
+                    } else {
+                        iframe.onload = function() {
+                            iframe.style.opacity = '1';
+                            if (iframe.classList.contains('active')) {
+                                loadingIndicator.style.display = 'none';
+                            }
+                        };
+                    }
+                });
+            }
+            
+            // تبديل التطبيقات بسلاسة
+            function switchApp(index) {
+                currentAppIndex = index;
+                const app = apps[index];
+                
+                loadingIndicator.style.display = 'flex';
+                
+                document.querySelectorAll('iframe').forEach(frame => {
+                    frame.classList.remove('active');
+                });
+                
+                const activeFrame = document.getElementById(app.frame);
+                activeFrame.classList.add('active');
+                
+                appTabs.forEach(tab => tab.classList.remove('active'));
+                document.querySelector(`.app-tab[data-app="${app.id}"]`).classList.add('active');
+                
+                // إذا كان الإطار محمل بالفعل، اخفي مؤشر التحميل
+                if (activeFrame.src && activeFrame.src !== 'about:blank') {
+                    setTimeout(() => {
+                        loadingIndicator.style.display = 'none';
+                    }, 500);
+                }
+            }
+            
+            // عرض النصيحة الحالية
+            function showCurrentQuote() {
+                currentQuote.textContent = quotes[currentQuoteIndex].text;
+                quoteSource.textContent = quotes[currentQuoteIndex].source;
+            }
+            
+            // الانتقال للنصيحة التالية
+            function nextQuote() {
+                currentQuoteIndex = (currentQuoteIndex + 1) % quotes.length;
+                showCurrentQuote();
+                
+                // تأثير رائع عند تغيير النصيحة
+                const content = document.querySelector('.quotes-content');
+                content.style.animation = 'none';
+                setTimeout(() => {
+                    content.style.animation = 'fadeInUp 0.5s cubic-bezier(0.22, 1, 0.36, 1)';
+                }, 10);
+            }
+            
+            // تبديل حالة الشريط العلوي
+            function toggleHeader() {
+                isHeaderVisible = !isHeaderVisible;
+                
+                if (isHeaderVisible) {
+                    headerContainer.classList.remove('hidden');
+                    appsBar.classList.remove('hidden');
+                    mainContent.classList.remove('full-view');
+                    toggleHeaderBtn.innerHTML = '<i class="fas fa-eye-slash"></i>';
+                } else {
+                    headerContainer.classList.add('hidden');
+                    appsBar.classList.add('hidden');
+                    mainContent.classList.add('full-view');
+                    toggleHeaderBtn.innerHTML = '<i class="fas fa-eye"></i>';
+                }
+            }
+            
+            // تفعيل التطبيق الأول
+            switchApp(0);
+            showCurrentQuote();
+            preloadIframes();
+            
+            // أحداث النقر على علامات التبويب
+            appTabs.forEach((tab, index) => {
+                tab.addEventListener('click', () => switchApp(index));
+            });
+            
+            // أحداث النصائح
+            quotesBtn.addEventListener('click', () => {
+                quotesModal.classList.add('active');
+            });
+            
+            closeQuotes.addEventListener('click', () => {
+                quotesModal.classList.remove('active');
+            });
+            
+            nextQuoteBtn.addEventListener('click', nextQuote);
+            
+            // إغلاق النافذة عند النقر خارجها
+            quotesModal.addEventListener('click', (e) => {
+                if (e.target === quotesModal) {
+                    quotesModal.classList.remove('active');
+                }
+            });
+            
+            // أحداث التحكم في الشريط العلوي
+            toggleHeaderBtn.addEventListener('click', toggleHeader);
+            
+            // تحميل جميع الإطارات في الخلفية
+            setTimeout(() => {
+                apps.forEach(app => {
+                    const iframe = document.getElementById(app.frame);
+                    if (!iframe.src || iframe.src === 'about:blank') {
+                        iframe.src = app.url;
+                    }
+                });
+            }, 800);
+            
+            // حل مشكلة أزرار موقع الجدول
+            window.addEventListener('message', function(e) {
+                if (e.data === 'adjustTableButtons') {
+                    const tableFrame = document.getElementById('table-frame');
+                    try {
+                        const css = `
+                            body {
+                                padding-top: 15px !important;
+                            }
+                            .add-btn, .print-btn {
+                                margin-top: 15px !important;
+                                transform: translateY(0) !important;
+                                position: relative !important;
+                                z-index: 10 !important;
+                            }
+                        `;
+                        const style = tableFrame.contentDocument.createElement('style');
+                        style.textContent = css;
+                        tableFrame.contentDocument.head.appendChild(style);
+                    } catch (err) {
+                        console.log('تم تعديل موقع الجدول بنجاح');
+                    }
+                }
+            });
+            
+            // تحسين الأداء: تقليل استخدام الذاكرة
+            window.addEventListener('blur', function() {
+                document.querySelectorAll('iframe').forEach(iframe => {
+                    if (!iframe.classList.contains('active')) {
+                        iframe.src = 'about:blank';
+                    }
+                });
+            });
+            
+            window.addEventListener('focus', function() {
+                apps.forEach(app => {
+                    const iframe = document.getElementById(app.frame);
+                    if (iframe.src === 'about:blank') {
+                        iframe.src = app.url;
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
